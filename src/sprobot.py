@@ -2,8 +2,21 @@ import os
 
 import discord
 from discord import app_commands
+from discord.ext import tasks
+import requests
 
 from commands import get_commands
+
+HEALTHCHECK_URL = ""
+
+
+@tasks.loop(seconds=30)
+async def ping_healthchecks():
+    try:
+        requests.get(HEALTHCHECK_URL, timeout=10)
+    except requests.RequestException as e:
+        # Log ping failure here...
+        print("Ping failed: %s" % e)
 
 
 class MyClient(discord.Client):
@@ -22,6 +35,8 @@ class MyClient(discord.Client):
     async def on_ready(self) -> None:
         print(f"Logged in as {self.user}")
         print("------")
+        await ping_healthchecks()
+        ping_healthchecks.start()
 
     async def setup_hook(self) -> None:
         for guild_id, commands in get_commands().items():

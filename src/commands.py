@@ -30,7 +30,7 @@ class EditProfile(discord.ui.Modal):
     # Our modal classes MUST subclass `discord.ui.Modal`,
     # but the title can be whatever you want.
 
-    def __init__(self, template: Template, *args: Any, **kwargs: Any):
+    def __init__(self, user_id: int, template: Template, *args: Any, **kwargs: Any):
         # This must come before adding the children
         super().__init__(title="Edit Profile", *args, **kwargs)
 
@@ -136,7 +136,7 @@ def get_commands() -> Dict[int, List[discord.app_commands.Command[Any, Any, Any]
             ) -> discord.app_commands.Command[Any, Any, Any]:
                 async def editfunc(interaction: discord.Interaction) -> None:
                     await interaction.response.send_modal(
-                        EditProfile(template=template)
+                        EditProfile(user_id=interaction.user.id, template=template)
                     )
 
                 return (
